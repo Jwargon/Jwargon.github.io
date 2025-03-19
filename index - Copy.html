@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>newtab</title>  
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&display=swap" rel="stylesheet">	
+	
+	<script>
+		var separatorLeft = "[";
+		var separatorRight = "]";
+		
+		var Link1 = "https://youtube.com";
+		var Link2 = "https://www.twitter.com";
+		var Link3 = "https://bsky.app";
+		var Link4 = "";
+		var Link5 = "";
+		var Link6 = "";
+		var Link7 = "";
+		var Link8 = "";
+	</script>
+    <style>
+		:root {
+			--font: "Gohu-11";
+			--fontSize: 11px;
+			--titleFont: "Gohu-14";
+			--titleFontSize: 14px;
+			
+			--columnWidth: 90px;
+		
+			--loadingBgColor: #1E2326;
+			--bgColor: #D3C6AA;
+			
+			--boxBgColor: #1E2326;
+			--boxBorderColor: #D3C6AA;
+			--boxShadowColor: #1E2326;
+			
+			--mainFontColor: #D3C6AA;
+			--highlightFontColor: #D3C6AA;
+			--titleFontColor: #95a57e;
+			--separatorColor: #44554d;
+		}
+		
+		@font-face {
+			font-family: Gohu-11;
+			src:url("../HomePage/gohufont-11.ttf") format('truetype');
+		}
+		
+		@font-face {
+			font-family: Gohu-14;
+			src:url("../HomePage/gohufont-14.ttf") format('truetype');
+		}
+		
+		html {
+			align-items: center;
+			display: flex;
+			font-family: var(--font), Inconsolata;
+			font-size: var(--fontSize);
+			height: 100%;
+			justify-content: center;
+		}
+
+		body {
+			background-color: var(--loadingBgColor);			
+		}
+
+		canvas {
+			position: fixed;
+			top: 0;
+			left: 0;
+			z-index: -1;
+		}
+
+		main {
+			background-color: var(--boxBgColor);
+			border-radius: 3px;
+			border: solid var(--boxBorderColor);
+			border-width: thin;
+			box-sizing: border-box;
+			box-shadow: 3px 3px 15px var(--boxShadowColor);
+			color: var(--mainFontColor);
+			display: flex;
+			flex-direction: column;
+			min-height: 0ch;
+			min-width: 0vw;
+		}
+
+		.options {
+			position: fixed;
+			float: left;
+			top: 5px;
+			right: 10px;
+			padding: 2px;
+			border-radius: 3px;
+			border-width: 1px;
+			box-sizing: border-box;
+			border-style: solid;
+			border-color: var(--boxBorderColor);
+			background: var(--boxBgColor);
+			color: var(--mainFontColor);
+		}
+
+		label{
+			float: right;
+		}
+
+		.divlabel{
+			float: right;
+		}
+
+		input[type="color"]{
+			visibility: hidden;
+			height: 0;
+			width: 0;
+			position: fixed;
+		}
+
+		input[type="range"] {
+			-webkit-appearance: none;
+			appearance: none;
+			background: var(--boxBorderColor);
+			height: 1px;
+			cursor: pointer;
+			width: 5em;
+			position: relative;
+			top: 5px;
+			float:left;
+		}
+
+		input[type="range"]::-webkit-slider-thumb {
+			-webkit-appearance: none;
+			appearance: none;
+			margin-top: -1px;
+			background-color: var(--boxBgColor);
+			border-color: var(--mainFontColor);
+			border-style: solid;
+			border-width: 1px;
+			height: 5px;
+			width: 1rem;    
+		}
+
+		input[type="range"]::-moz-range-thumb {
+			border: none;
+			border-radius: 0;
+			background-color: #5cd5eb;
+			height: 2rem;
+			width: 1rem;
+		}
+
+		a {
+			color: inherit;
+			text-decoration: none;
+		}
+
+		a:hover {
+			color: var(--highlightFontColor);
+		}
+
+		ul {
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+			min-width: var(--columnWidth);
+		}
+
+		nav {
+			column-gap: 0em;
+			display: flex;
+			padding: 2em 2em 2em 2em;
+			text-align: center;
+		}
+
+		li:first-child {
+			font-family: var(--titleFont), Inconsolata;
+			font-size: var(--titleFontSize);
+			color: var(--titleFontColor);
+			padding-bottom: 3px;
+		}
+		
+		.hover-trigger {
+			cursor: pointer;
+
+			.hide {
+				display: inline-block;
+				max-width: 0;
+				color: var(--boxBgColor);
+				transition: max-width 0.2s, color 0.2s;
+			}
+
+			&:hover .hide {
+				max-width: 100px;
+				color: var(--highlightFontColor);
+			}
+		
+			&:hover .hide:first-child {
+				max-width: 100px;
+				color: var(--separatorColor);
+			}	  
+		
+			&:hover .hide:last-child {
+				max-width: 100px;
+				color: var(--separatorColor);
+			}
+		
+			&.loaded .hide {
+				animation: showHide 1s;
+			}
+		}
+
+		@keyframes showHide {
+			0% {
+				max-width: 0;
+				margin-right: 0;
+			}
+			25% {
+				max-width: 100px;
+				margin-right: 10px;
+			}
+			75% {
+				max-width: 100px;
+				margin-right: 10px;
+			}
+			100% {
+				max-width: 0;
+				margin-right: 0;
+			}
+		}
+	</style>
+</head>
+<body>
+	<canvas></canvas>
+	<div class="options">
+		<div><label><b>static colors</b></label></div>
+		<br>
+		<div>
+			<label><input type="color" oninput="ModifyVariable('--bgColor',this.value)">bgColor</label>
+		</div>
+		<br>
+		<div>
+			<label><input type="color" oninput="ModifyVariable('--mainFontColor',this.value)">mainFontColor</label>
+		</div>
+		<br>
+		<div>
+			<label><input type="color" oninput="ModifyVariable('--highlightFontColor',this.value)">highlightFontColor</label>
+		</div>
+		<br>
+		<div>
+			<label><input type="color" oninput="ModifyVariable('--titleFontColor',this.value)">titleFontColor</label>
+		</div>
+		<br>
+		<div>
+			<label><input type="color" oninput="ModifyVariable('--boxBgColor',this.value)">boxBgColor</label>
+		</div>
+		<br>
+		<div>
+			<label><input type="color" oninput="ModifyVariable('--boxBorderColor',this.value)">boxBorderColor</label>
+		</div>
+		<br>
+		<div>
+			<label><input type="color" oninput="ModifyVariable('--boxShadowColor',this.value)">boxShadowColor</label>
+		</div>
+		<br>
+		<div>
+			<label><input type="color" oninput="ModifyVariable('--separatorColor',this.value)">separatorColor</label>
+		</div>
+		<br><br>
+		<div><label><b>line colors</b></label></div>
+		<br>
+		<div>
+			<label><input type="color" oninput="{strokeStyle = this.value; Redraw(cursor.x, cursor.y);}">lineColor</label>
+		</div>
+		<br>
+		<div>
+			<label><input type="color" oninput="{strokeBorder = this.value; Redraw(cursor.x, cursor.y);}">lineBorderColor</label>
+		</div>
+		<br><br>
+		<div><label><b>line variables</b></label></div>
+		<br>
+		<label>base width</label>
+		<input id="baseWidthSlider" type="range" min="0" max="20" step="1"/><br>
+		<label>max width</label>
+		<input id="maxWidthSlider" type="range" min="1" max="60" step="1"/><br>
+		<label>effect</label>
+		<input id="circleDivisorSlider" type="range" min="0" max="50" step="1"/><br>
+		<label>line gap</label>
+		<input id="lineGapSlider" type="range" min="1" max="30" step="1"/><br>
+		<label>line count</label>
+		<input id="lineCountSlider" type="range" min="1" max="151" step="2"/><br>
+		<label>randomness</label>
+		<input id="randomnessSlider" type="range" min="0" max="200" step="5"/><br>
+		<br>		
+		<div class="divlabel">change linecap type</div>
+	</div>
+	<main>
+		<nav>
+			<ul>
+				<li>general</li>
+				<li><a href="" id="link1">
+					<div class="hover-trigger">
+					y<span class="hide">ou</span>tub<span class="hide">e</span>
+					</div>
+				</a></li>
+				<li><a href="" id="link2">
+					<div class="hover-trigger">
+					tw<span class="hide">it</span>t<span class="hide">e</span>r
+					</div>
+				</a></li>
+				<li><a href="" id="link3">
+					<div class="hover-trigger">
+					b<span class="hide">lue</span>sky
+					</div>
+				</a></li>
+				<li><a href="" id="link4">
+					<div class="hover-trigger">
+					j<span class="hide">el</span>l<span class="hide">y</span>f<span class="hide">i</span>n
+					</div>
+				</a></li>
+			</ul>
+
+			<ul>
+				<li>server</li>
+				<li><a href="" id="link5">
+					<div class="hover-trigger">
+					r<span class="hide">a</span>d<span class="hide">a</span>rr
+					</div>
+				</a></li>
+				<li><a href="" id="link6">
+					<div class="hover-trigger">
+					s<span class="hide">o</span>n<span class="hide">a</span>rr
+					</div>
+				</a></li>
+				<li><a href="" id="link7">
+					<div class="hover-trigger">
+					b<span class="hide">a</span>z<span class="hide">a</span>rr
+					</div>
+				</a></li>
+				<li><a href="" id="link8">
+					<div class="hover-trigger">
+					d<span class="hide">e</span>l<span class="hide">u</span>ge
+					</div>
+				</a></li>
+			</ul>
+		</nav>
+	</main>
+	<script src='http://joeiddon.github.io/perlin/perlin.js'></script>
+	<script>
+		var root = document.querySelector(':root');
+
+		var links = document.getElementsByClassName("hover-trigger");
+		for (var i = 0; i < links.length; i++) {
+			links[i].innerHTML = "<span class='hide'>"+separatorLeft+"</span>"+links[i].innerHTML.trim()+"<span class='hide'>"+separatorRight+"</span>"
+		}
+		
+		document.getElementById("link1").href = Link1;
+		document.getElementById("link2").href = Link2;
+		document.getElementById("link3").href = Link3;
+		document.getElementById("link4").href = Link4;
+		document.getElementById("link5").href = Link5;
+		document.getElementById("link6").href = Link6;
+		document.getElementById("link7").href = Link7;
+		document.getElementById("link8").href = Link8;
+
+		window.addEventListener("resize", SetupCanvas);
+		window.addEventListener("mousemove", e => {Redraw(e.pageX, e.pageY)});
+		// window.addEventListener("mousemove", e => {UpdateCursor(e.pageX, e.pageY)});
+		document.body.onclick = function(e) {
+			if(window.event){
+				e = event.srcElement;
+			}
+			else {
+				e = e.target;
+			}
+
+			if (e.className && e.className.indexOf('divlabel') != -1){
+				if (lineCap === "square"){
+					lineCap = "round";
+				}
+				else {
+					lineCap = "square";
+				}
+				Redraw(cursor.x, cursor.y);
+			}
+		}
+
+		const canvas = document.querySelector("canvas");
+		var height = window.innerHeight;
+		var width = window.innerWidth;
+
+		const ctx = canvas.getContext("2d");
+
+		var count = 150;
+		var randomness = 100;
+		var lineGap = 15;
+		var lineCount = 50;
+		var strokeStyle = "#1E2326";
+		var strokeBorder = "#44554d";
+		var circleSizeDivisor = 10;
+		var baseWidth = 10;
+		var maxWidth = 40;
+		var lineCap = "square";
+
+		var baseWidthSlider = document.getElementById('baseWidthSlider');
+		var maxWidthSlider = document.getElementById('maxWidthSlider');
+		var circleDivisorSlider = document.getElementById('circleDivisorSlider');
+		var lineGapSlider = document.getElementById('lineGapSlider');
+		var lineCountSlider = document.getElementById('lineCountSlider');
+		var randomnessSlider = document.getElementById('randomnessSlider');
+		baseWidthSlider.oninput = function(){
+			baseWidth = Number(baseWidthSlider.value);
+		}
+		maxWidthSlider.oninput = function(){
+			maxWidth = Number(maxWidthSlider.value);
+		}
+		circleDivisorSlider.oninput = function(){
+			circleSizeDivisor = Number(circleDivisorSlider.value);
+		}
+		lineGapSlider.oninput = function(){
+			lineGap = Number(lineGapSlider.value);
+		}
+		lineCountSlider.oninput = function(){
+			lineCount = Number(lineCountSlider.value);
+		}
+		randomnessSlider.oninput = function(){
+			tempRandom = Number(randomnessSlider.value);
+		}
+
+		var points = [count];
+		var randoms = [count];
+		var cursor = {x: 0, y: 0};
+		var t = 0;
+
+		var prevXC;
+		var prevXY;
+		var rand;
+		var nextRand;
+
+		var xc;
+		var xy;
+
+		var tempRandom = randomness;
+
+		for (let i = 0; i<count; i++){
+			randoms[i] = Math.random();
+		}
+		
+		SetupCanvas();
+
+		// function UpdateCursor(eX, eY){
+		// 	cursor.x = eX;
+		// 	cursor.y = eY;
+		// }
+
+		function SetupCanvas(){
+			height = window.innerHeight;
+			width = window.innerWidth;
+
+			canvas.height = height;
+			canvas.width = width;
+
+			points[0] = {x: 0, y: height};
+			points[count - 1] = {x: width, y: 0};
+
+			for	(var i = 1; i < count - 1; i++){
+				points[i] = {x: width * (1/count*i), y: height * (1 - (1/count*i))};
+			}
+
+			// Animate();
+			Redraw(0,0);
+			document.body.style.backgroundColor = window.getComputedStyle(document.body).getPropertyValue("--bgColor");
+		}
+
+		// function Animate(){
+		// 	t = t+0.7;
+		// 	tempRandom = randomness + Math.sin(t/20) * randomness;
+		// 	if(tempRandom < 0.1 && t>0){
+		// 		perlin.seed();
+		// 		t = (-3.14/2)*20;
+		// 		console.warn("seed");
+		// 	}
+		// 	Redraw(cursor.x, cursor.y);
+		// 	requestAnimationFrame(Animate);
+		// }
+
+		function Redraw(eX, eY){
+			cursor.x = eX;
+			cursor.y = eY;
+
+			ctx.strokeStyle = strokeStyle;
+			ctx.lineCap = lineCap;
+			ctx.clearRect(0,0,canvas.width, canvas.height);
+			ctx.lineWidth = 1;
+
+			for (let l = -(lineCount * lineGap); l < lineCount * lineGap; l = l+lineGap) {
+				rand = perlin.get((points[0].x+l+t)/300, (points[0].y+l+t)/300)*tempRandom;
+				prevXC = points[0].x + l + rand;
+				prevYC = points[0].y + l + rand;
+				
+				rand = perlin.get((points[1].x+l+t)/300, (points[1].y+l+t)/300)*tempRandom;
+				for (var i = 1; i < points.length - 1; i++) {
+					nextRand = perlin.get((points[i+1].x+l+t)/300, (points[i+1].y+l+t)/300)*tempRandom;
+					ctx.beginPath();
+					ctx.lineWidth = Math.min(maxWidth, baseWidth + Math.pow(Math.sqrt(Math.pow((eX)-(points[i].x + rand + l),2)+Math.pow((eY)-(points[i].y + rand + l),2)),1.1)/circleSizeDivisor);
+					xc = (points[i].x + rand + l + points[i + 1].x + nextRand + l) / 2;
+					yc = (points[i].y + rand + l + points[i + 1].y + nextRand + l) / 2;
+					ctx.moveTo(prevXC, prevYC);
+					ctx.quadraticCurveTo(points[i].x + rand + l, points[i].y + rand + l, xc, yc);
+					ctx.strokeStyle = strokeBorder;
+					ctx.stroke();
+					ctx.strokeStyle = strokeStyle;
+					ctx.lineWidth = Math.max(baseWidth, ctx.lineWidth - (maxWidth - ctx.lineWidth)/10);
+					ctx.stroke();
+					prevXC = xc;
+					prevYC = yc;
+					rand = nextRand;
+				}
+		
+				// curve through the last two points
+				ctx.beginPath();			
+				ctx.lineWidth = Math.min(maxWidth, baseWidth + Math.pow(Math.sqrt(Math.pow((eX)-(points[i].x + l),2)+Math.pow((eY)-(points[i].y + l),2)),1.1)/circleSizeDivisor);
+				ctx.moveTo(prevXC, prevYC)
+				ctx.quadraticCurveTo(
+				points[i].x + rand + l,
+				points[i].y + rand + l,
+				points[count-1].x + rand + l,
+				points[count-1].y + rand + l
+				);
+				ctx.strokeStyle = strokeBorder;
+				ctx.stroke();
+				ctx.strokeStyle = strokeStyle;
+				ctx.lineWidth = Math.max(baseWidth, ctx.lineWidth - (maxWidth - ctx.lineWidth)/10);
+				ctx.stroke();
+			}
+		}
+
+		function ModifyVariable(variableName, newValue){
+			root.style.setProperty(variableName,newValue);
+			if(variableName === "--bgColor"){				
+				document.body.style.backgroundColor = window.getComputedStyle(document.body).getPropertyValue("--bgColor");
+			}
+		}
+	</script>
+</body>
+</html>
